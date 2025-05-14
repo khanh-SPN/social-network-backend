@@ -1,15 +1,15 @@
 openapi: 3.0.0
 info:
   title: Face Gram API
-  description: API for Face Gram social network
+  description: API cho mạng xã hội Face Gram
   version: 1.0.0
 servers:
   - url: http://localhost:5000
-    description: Local server
+    description: Server cục bộ
 paths:
   /api/auth/signup:
     post:
-      summary: Register a new user
+      summary: Đăng ký người dùng mới
       requestBody:
         required: true
         content:
@@ -19,15 +19,23 @@ paths:
               properties:
                 username:
                   type: string
+                  description: Tên người dùng
                 email:
                   type: string
+                  description: Địa chỉ email
                 password:
                   type: string
+                  description: Mật khẩu
                 profileTag:
                   type: string
+                  description: Thẻ hồ sơ
+              required:
+                - username
+                - email
+                - password
       responses:
         '200':
-          description: User registered successfully
+          description: Người dùng được đăng ký thành công
           content:
             application/json:
               schema:
@@ -35,13 +43,30 @@ paths:
                 properties:
                   token:
                     type: string
+                    description: Token JWT
         '400':
-          description: User already exists
+          description: Người dùng đã tồn tại
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Người dùng đã tồn tại
         '500':
-          description: Server error
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
   /api/auth/login:
     post:
-      summary: Login a user
+      summary: Đăng nhập người dùng
       requestBody:
         required: true
         content:
@@ -51,11 +76,16 @@ paths:
               properties:
                 email:
                   type: string
+                  description: Địa chỉ email
                 password:
                   type: string
+                  description: Mật khẩu
+              required:
+                - email
+                - password
       responses:
         '200':
-          description: User logged in successfully
+          description: Đăng nhập thành công
           content:
             application/json:
               schema:
@@ -63,28 +93,87 @@ paths:
                 properties:
                   token:
                     type: string
+                    description: Token JWT
         '400':
-          description: Invalid credentials
+          description: Thông tin đăng nhập không hợp lệ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Thông tin đăng nhập không hợp lệ
         '500':
-          description: Server error
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
   /api/users/{id}:
     get:
-      summary: Get user profile
+      summary: Lấy hồ sơ người dùng
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: integer
+          description: ID của người dùng
       responses:
         '200':
-          description: User profile
+          description: Hồ sơ người dùng
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  username:
+                    type: string
+                  email:
+                    type: string
+                  profileTag:
+                    type: string
+                  bio:
+                    type: string
+                  profilePicture:
+                    type: string
+                  coverPicture:
+                    type: string
+                  createdAt:
+                    type: string
+                    format: date-time
+                  updatedAt:
+                    type: string
+                    format: date-time
         '404':
-          description: User not found
+          description: Người dùng không tồn tại
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Người dùng không tồn tại
         '500':
-          description: Server error
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
     put:
-      summary: Update user profile
+      summary: Cập nhật hồ sơ người dùng
       security:
         - bearerAuth: []
       parameters:
@@ -93,6 +182,7 @@ paths:
           required: true
           schema:
             type: integer
+          description: ID của người dùng
       requestBody:
         content:
           multipart/form-data:
@@ -101,22 +191,76 @@ paths:
               properties:
                 bio:
                   type: string
+                  description: Tiểu sử người dùng
                 profilePicture:
                   type: string
                   format: binary
+                  description: Ảnh đại diện
                 coverPicture:
                   type: string
                   format: binary
+                  description: Ảnh bìa
       responses:
         '200':
-          description: User updated
+          description: Hồ sơ người dùng được cập nhật
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  username:
+                    type: string
+                  email:
+                    type: string
+                  profileTag:
+                    type: string
+                  bio:
+                    type: string
+                  profilePicture:
+                    type: string
+                  coverPicture:
+                    type: string
+                  createdAt:
+                    type: string
+                    format: date-time
+                  updatedAt:
+                    type: string
+                    format: date-time
+        '401':
+          description: Không có quyền truy cập
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Không có quyền truy cập
         '404':
-          description: User not found
+          description: Người dùng không tồn tại
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Người dùng không tồn tại
         '500':
-          description: Server error
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
   /api/users/{id}/follow:
     post:
-      summary: Follow a user
+      summary: Theo dõi người dùng
       security:
         - bearerAuth: []
       parameters:
@@ -125,9 +269,10 @@ paths:
           required: true
           schema:
             type: integer
+          description: ID của người dùng cần theo dõi
       responses:
         '200':
-          description: Followed successfully
+          description: Theo dõi thành công
           content:
             application/json:
               schema:
@@ -135,17 +280,57 @@ paths:
                 properties:
                   follow:
                     type: object
+                    properties:
+                      followerId:
+                        type: integer
+                      followingId:
+                        type: integer
                   followed:
                     type: boolean
+                    description: Trạng thái theo dõi
         '400':
-          description: Already followed or cannot follow self
+          description: Đã theo dõi hoặc không thể tự theo dõi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Đã theo dõi hoặc không thể tự theo dõi
+        '401':
+          description: Không có quyền truy cập
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Không có quyền truy cập
         '404':
-          description: User not found
+          description: Người dùng không tồn tại
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Người dùng không tồn tại
         '500':
-          description: Server error
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
   /api/users/{id}/unfollow:
     post:
-      summary: Unfollow a user
+      summary: Bỏ theo dõi người dùng
       security:
         - bearerAuth: []
       parameters:
@@ -154,68 +339,238 @@ paths:
           required: true
           schema:
             type: integer
+          description: ID của người dùng cần bỏ theo dõi
       responses:
         '200':
-          description: Unfollowed successfully
+          description: Bỏ theo dõi thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Bỏ theo dõi thành công
+        '401':
+          description: Không có quyền truy cập
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Không có quyền truy cập
         '404':
-          description: Follow not found
+          description: Quan hệ theo dõi không tồn tại
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Quan hệ theo dõi không tồn tại
         '500':
-          description: Server error
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
   /api/users/search:
     get:
-      summary: Search users by tag
+      summary: Tìm kiếm người dùng theo thẻ
       parameters:
         - name: tag
           in: query
           required: true
           schema:
             type: string
+          description: Thẻ hồ sơ để tìm kiếm
       responses:
         '200':
-          description: List of users
+          description: Danh sách người dùng
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    username:
+                      type: string
+                    profileTag:
+                      type: string
+                    profilePicture:
+                      type: string
+        '400':
+          description: Thẻ tìm kiếm không hợp lệ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Thẻ tìm kiếm không hợp lệ
         '500':
-          description: Server error
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
   /api/users/suggestions:
     get:
-      summary: Get user suggestions
+      summary: Lấy danh sách người dùng đề xuất
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: List of suggested users
+          description: Danh sách người dùng đề xuất
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    username:
+                      type: string
+                    profileTag:
+                      type: string
+                    profilePicture:
+                      type: string
+        '401':
+          description: Không có quyền truy cập
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Không có quyền truy cập
         '500':
-          description: Server error
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
   /api/users/{id}/following:
     get:
-      summary: Get list of users the user is following
+      summary: Lấy danh sách người dùng đang theo dõi
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: integer
+          description: ID của người dùng
       responses:
         '200':
-          description: List of following users
+          description: Danh sách người dùng đang theo dõi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    username:
+                      type: string
+                    profilePicture:
+                      type: string
+                    profileTag:
+                      type: string
+        '404':
+          description: Người dùng không tồn tại
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Người dùng không tồn tại
         '500':
-          description: Server error
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
   /api/users/{id}/followers:
     get:
-      summary: Get list of user's followers
+      summary: Lấy danh sách người theo dõi
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: integer
+          description: ID của người dùng
       responses:
         '200':
-          description: List of followers
+          description: Danh sách người theo dõi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    username:
+                      type: string
+                    profilePicture:
+                      type: string
+                    profileTag:
+                      type: string
+        '404':
+          description: Người dùng không tồn tại
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Người dùng không tồn tại
         '500':
-          description: Server error
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
   /api/posts:
     post:
-      summary: Create a post
+      summary: Tạo bài viết mới
       security:
         - bearerAuth: []
       requestBody:
@@ -226,80 +581,149 @@ paths:
               properties:
                 content:
                   type: string
+                  description: Nội dung bài viết
                 image:
                   type: string
                   format: binary
+                  description: Ảnh bài viết
+              required:
+                - content
       responses:
-        '200':
-          description: Post created
-        '500':
-          description: Server error
-    get:
-      summary: Get all posts with pagination
-      parameters:
-        - name: page
-          in: query
-          schema:
-            type: integer
-        - name: limit
-          in: query
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: List of posts
-        '500':
-          description: Server error
-  /api/posts/{id}:
-    delete:
-      summary: Delete a post
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Post deleted
-        '404':
-          description: Post not found
-        '403':
-          description: Unauthorized
-        '500':
-          description: Server error
-  /api/posts/{id}/like:
-    post:
-      summary: Like or unlike a post
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Liked or unliked successfully
+        '201':
+          description: Bài viết được tạo thành công
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  like:
+                  id:
                     type: integer
-                  liked:
-                    type: boolean
-        '404':
-          description: Post not found
+                  userId:
+                    type: integer
+                  content:
+                    type: string
+                  image:
+                    type: string
+                  likes:
+                    type: integer
+                  createdAt:
+                    type: string
+                    format: date-time
+                  updatedAt:
+                    type: string
+                    format: date-time
+        '400':
+          description: Nội dung bài viết là bắt buộc
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Nội dung bài viết là bắt buộc
+        '401':
+          description: Không có quyền truy cập
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Không có quyền truy cập
         '500':
-          description: Server error
-  /api/posts/{id}/comment:
-    post:
-      summary: Comment on a post
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
+    get:
+      summary: Lấy danh sách bài viết với phân trang
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Số trang
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+          description: Số bài viết mỗi trang
+      responses:
+        '200':
+          description: Danh sách bài viết
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  posts:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        userId:
+                          type: integer
+                        content:
+                          type: string
+                        image:
+                          type: string
+                        likes:
+                          type: integer
+                        createdAt:
+                          type: string
+                          format: date-time
+                        updatedAt:
+                          type: string
+                          format: date-time
+                        User:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            username:
+                              type: string
+                            profilePicture:
+                              type: string
+                            profileTag:
+                              type: string
+                  totalPages:
+                    type: integer
+                  currentPage:
+                    type: integer
+        '400':
+          description: Dữ liệu đầu vào không hợp lệ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Trang và giới hạn phải lớn hơn 0
+        '500':
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
+  /api/posts/{id}:
+    delete:
+      summary: Xóa bài viết
       security:
         - bearerAuth: []
       parameters:
@@ -308,6 +732,318 @@ paths:
           required: true
           schema:
             type: integer
+          description: ID của bài viết
+      responses:
+        '200':
+          description: Bài viết đã được xóa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Bài viết đã được xóa
+        '400':
+          description: ID bài viết không hợp lệ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: ID bài viết không hợp lệ
+        '401':
+          description: Không có quyền truy cập
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Không có quyền truy cập
+        '403':
+          description: Không có quyền xóa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Không có quyền xóa
+        '404':
+          description: Bài viết không tồn tại
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Bài viết không tồn tại
+        '500':
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
+  /api/posts/{id}/like:
+    post:
+      summary: Thích hoặc bỏ thích bài viết
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID của bài viết
+      responses:
+        '200':
+          description: Thích hoặc bỏ thích thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  likes:
+                    type: integer
+                    description: Số lượt thích hiện tại
+                  liked:
+                    type: boolean
+                    description: Trạng thái thích
+        '400':
+          description: ID bài viết không hợp lệ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: ID bài viết không hợp lệ
+        '401':
+          description: Không có quyền truy cập
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Không có quyền truy cập
+        '404':
+          description: Bài viết không tồn tại
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Bài viết không tồn tại
+        '500':
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
+  /api/posts/{id}/likes:
+    get:
+      summary: Lấy danh sách lượt thích của bài viết
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID của bài viết
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Số trang
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+          description: Số lượt thích mỗi trang
+      responses:
+        '200':
+          description: Danh sách lượt thích của bài viết
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  likes:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        userId:
+                          type: integer
+                        postId:
+                          type: integer
+                        createdAt:
+                          type: string
+                          format: date-time
+                        username:
+                          type: string
+                        profilePicture:
+                          type: string
+                        profileTag:
+                          type: string
+                  totalPages:
+                    type: integer
+                  currentPage:
+                    type: integer
+        '400':
+          description: ID bài viết không hợp lệ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: ID bài viết không hợp lệ
+        '404':
+          description: Bài viết không tồn tại
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Bài viết không tồn tại
+        '500':
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
+  /api/posts/{id}/comments:
+    get:
+      summary: Lấy danh sách bình luận của bài viết
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID của bài viết
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Số trang
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+          description: Số bình luận mỗi trang
+      responses:
+        '200':
+          description: Danh sách bình luận của bài viết
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  comments:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        userId:
+                          type: integer
+                        postId:
+                          type: integer
+                        content:
+                          type: string
+                        createdAt:
+                          type: string
+                          format: date-time
+                        likes:
+                          type: integer
+                        username:
+                          type: string
+                        profilePicture:
+                          type: string
+                        profileTag:
+                          type: string
+                  totalPages:
+                    type: integer
+                  currentPage:
+                    type: integer
+        '400':
+          description: ID bài viết không hợp lệ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: ID bài viết không hợp lệ
+        '404':
+          description: Bài viết không tồn tại
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Bài viết không tồn tại
+        '500':
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
+  /api/posts/{id}/comment:
+    post:
+      summary: Bình luận bài viết
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID của bài viết
       requestBody:
         required: true
         content:
@@ -317,16 +1053,88 @@ paths:
               properties:
                 content:
                   type: string
+                  description: Nội dung bình luận
+              required:
+                - content
       responses:
-        '200':
-          description: Commented successfully
+        '201':
+          description: Bình luận được tạo thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: ID của bình luận
+                  userId:
+                    type: integer
+                    description: ID của người bình luận
+                  postId:
+                    type: integer
+                    description: ID của bài viết
+                  content:
+                    type: string
+                    description: Nội dung bình luận
+                  createdAt:
+                    type: string
+                    format: date-time
+                    description: Thời gian tạo bình luận
+                  likes:
+                    type: integer
+                    description: Số lượt thích của bình luận
+                  username:
+                    type: string
+                    description: Tên người dùng của người bình luận
+                  profilePicture:
+                    type: string
+                    description: URL ảnh đại diện của người bình luận
+                  profileTag:
+                    type: string
+                    description: Thẻ hồ sơ của người bình luận
+        '400':
+          description: Dữ liệu đầu vào không hợp lệ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Nội dung bình luận là bắt buộc
+        '401':
+          description: Không có quyền truy cập
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Không có quyền truy cập
         '404':
-          description: Post not found
+          description: Bài viết không tồn tại
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Bài viết không tồn tại
         '500':
-          description: Server error
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
   /api/posts/{id}/recommend:
     post:
-      summary: Recommend a post
+      summary: Đề xuất bài viết
       security:
         - bearerAuth: []
       parameters:
@@ -335,16 +1143,61 @@ paths:
           required: true
           schema:
             type: integer
+          description: ID của bài viết
       responses:
         '200':
-          description: Post recommended
+          description: Bài viết đã được đề xuất
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Bài viết đã được đề xuất
+        '400':
+          description: ID bài viết không hợp lệ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: ID bài viết không hợp lệ
+        '401':
+          description: Không có quyền truy cập
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Không có quyền truy cập
         '404':
-          description: Post not found
+          description: Bài viết không tồn tại
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Bài viết không tồn tại
         '500':
-          description: Server error
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
   /api/notifications:
     get:
-      summary: Get notifications with pagination
+      summary: Lấy danh sách thông báo với phân trang
       security:
         - bearerAuth: []
       parameters:
@@ -352,18 +1205,112 @@ paths:
           in: query
           schema:
             type: integer
+            default: 1
+          description: Số trang
         - name: limit
           in: query
           schema:
             type: integer
+            default: 10
+          description: Số thông báo mỗi trang
       responses:
         '200':
-          description: List of notifications
+          description: Danh sách thông báo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  notifications:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          description: ID của thông báo
+                        userId:
+                          type: integer
+                          description: ID của người nhận thông báo
+                        type:
+                          type: string
+                          enum: [like, comment, recommend]
+                          description: Loại thông báo
+                        relatedUserId:
+                          type: integer
+                          description: ID của người tạo hành động
+                        relatedPostId:
+                          type: integer
+                          description: ID của bài viết liên quan
+                        isRead:
+                          type: boolean
+                          description: Trạng thái đã đọc
+                        createdAt:
+                          type: string
+                          format: date-time
+                          description: Thời gian tạo
+                        updatedAt:
+                          type: string
+                          format: date-time
+                          description: Thời gian cập nhật
+                        RelatedUser:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            username:
+                              type: string
+                            profilePicture:
+                              type: string
+                        relatedPost:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            content:
+                              type: string
+                    totalPages:
+                      type: integer
+                      description: Tổng số trang
+                    currentPage:
+                      type: integer
+                      description: Trang hiện tại
+        '400':
+          description: Dữ liệu đầu vào không hợp lệ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Trang và giới hạn phải lớn hơn 0
+        '401':
+          description: Không có quyền truy cập
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Không có quyền truy cập
         '500':
-          description: Server error
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
+                  error:
+                    type: string
+                    description: Chi tiết lỗi (chỉ trong môi trường phát triển)
   /api/notifications/{id}/read:
     put:
-      summary: Mark a notification as read
+      summary: Đánh dấu thông báo là đã đọc
       security:
         - bearerAuth: []
       parameters:
@@ -372,15 +1319,137 @@ paths:
           required: true
           schema:
             type: integer
+          description: ID của thông báo
       responses:
         '200':
-          description: Notification marked as read
-        '404':
-          description: Notification not found
+          description: Thông báo đã được đánh dấu là đã đọc
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Thông báo đã được đánh dấu là đã đọc
+        '400':
+          description: ID thông báo không hợp lệ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: ID thông báo không hợp lệ
+        '401':
+          description: Không có quyền truy cập
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Không có quyền truy cập
         '403':
-          description: Unauthorized
+          description: Không có quyền truy cập thông báo này
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Không có quyền truy cập thông báo này
+        '404':
+          description: Thông báo không tồn tại
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Thông báo không tồn tại
         '500':
-          description: Server error
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
+                  error:
+                    type: string
+                    description: Chi tiết lỗi (chỉ trong môi trường phát triển)
+  /api/comments/{id}/like:
+    post:
+      summary: Thích hoặc bỏ thích bình luận
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID của bình luận
+      responses:
+        '200':
+          description: Thích hoặc bỏ thích thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  likes:
+                    type: integer
+                    description: Số lượt thích hiện tại
+                  liked:
+                    type: boolean
+                    description: Trạng thái thích
+        '400':
+          description: ID bình luận không hợp lệ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: ID bình luận không hợp lệ
+        '401':
+          description: Không có quyền truy cập
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Không có quyền truy cập
+        '404':
+          description: Bình luận không tồn tại
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Bình luận không tồn tại
+        '500':
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
 components:
   securitySchemes:
     bearerAuth:

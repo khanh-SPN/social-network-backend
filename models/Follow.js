@@ -21,7 +21,12 @@ const Follow = sequelize.define('Follow', {
   },
 });
 
-User.belongsToMany(User, { as: 'follower', through: Follow, foreignKey: 'followingId' });
-User.belongsToMany(User, { as: 'following', through: Follow, foreignKey: 'followerId' });
+// Định nghĩa quan hệ
+Follow.belongsTo(User, { as: 'Follower', foreignKey: 'followerId' });
+Follow.belongsTo(User, { as: 'Following', foreignKey: 'followingId' });
 
-module.exports = Follow;
+// Quan hệ belongsToMany nên sửa lại để nhất quán
+User.belongsToMany(User, { as: 'Following', through: Follow, foreignKey: 'followerId', otherKey: 'followingId' });
+User.belongsToMany(User, { as: 'Follower', through: Follow, foreignKey: 'followingId', otherKey: 'followerId' });
+
+module.exports = Follow; // Chỉ xuất Follow

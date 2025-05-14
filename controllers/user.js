@@ -1,9 +1,13 @@
 const User = require('../models/User');
 const Follow = require('../models/Follow');
 const Notification = require('../models/Notification');
+const { Sequelize, Op } = require('sequelize');
 
 const getUser = async (req, res) => {
   try {
+    console.log('==============USER=======')
+ 
+   console.log('=====================')
     const user = await User.findByPk(req.params.id, {
       attributes: { exclude: ['password'] },
     });
@@ -80,6 +84,9 @@ const unfollowUser = async (req, res) => {
 };
 
 const searchUsers = async (req, res) => {
+  console.log('=====================')
+   console.log(req.query.tag)
+   console.log('=====================')
   try {
     const { tag } = req.query;
     const users = await User.findAll({
@@ -99,16 +106,35 @@ const getSuggestions = async (req, res) => {
       where: { followerId: currentUserId },
       attributes: ['followingId'],
     });
-    const followedIds = followedUsers.map(f => f.followingId);
+
+    console.log('*****')
+    console.log(followedUsers)
+    const followedIds = followedUsers?.map(f => f.followingId);
+    console.log('*****')
+    console.log(followedIds)
+
+
+    // const suggestions = await User.findAll({
+    //   where: {
+    //     id: { [Sequelize.Op.notIn]: [...followedIds, currentUserId] },
+    //   },
+    //   attributes: ['id', 'username', 'profilePicture', 'profileTag'],
+    //   limit: 10,
+    // });
 
     const suggestions = await User.findAll({
       where: {
-        id: { [Sequelize.Op.notIn]: [...followedIds, currentUserId] },
+        id: {
+          [Op.notIn]: [...followedIds, currentUserId], // Exclude these IDs
+        },
       },
-      attributes: ['id', 'username', 'profilePicture', 'profileTag'],
-      limit: 10,
+      attributes: ['id', 'username','profilePicture', 'profileTag'], // Select specific columns
+      limit: 10, // Limit results
     });
 
+
+console.log('*****')
+    // console.log(suggestions)
     res.json(suggestions);
   } catch (err) {
     res.status(500).json({ msg: 'Lỗi server' });
@@ -118,6 +144,8 @@ const getSuggestions = async (req, res) => {
 const getFollowing = async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id);
+    console.log('*****')
+    console.log('*****')
     if (!user) return res.status(404).json({ msg: 'Người dùng không tồn tại' });
 
     const following = await Follow.findAll({
@@ -138,9 +166,10 @@ const getFollowers = async (req, res) => {
 
     const followers = await Follow.findAll({
       where: { followingId: req.params.id },
-      include: [{ model: User, as: 'Followers', attributes: ['id', 'username', 'profilePicture', 'profileTag'] }],
+      include: [{ model: User, as: 'Follower', attributes: ['id', 'username', 'profilePicture', 'profileTag'] }],
     });
-    res.json(followers.map(f => f.Followers));
+
+    res.json(followers.map(f => f.Follower)); // Sửa Followers thành Follower
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Lỗi server' });

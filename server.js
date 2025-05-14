@@ -3,6 +3,7 @@ const sequelize = require('./config/db');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const postRoutes = require('./routes/post');
+const commentRoutes = require('./routes/comment')
 const notificationRoutes = require('./routes/notification');
 const swaggerUi = require('swagger-ui-express');
 const yaml = require('yamljs');
@@ -44,7 +45,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/notifications', notificationRoutes);
-
+app.use('/api/comments', commentRoutes);
 // Error handler
 app.use(errorHandler);
 
