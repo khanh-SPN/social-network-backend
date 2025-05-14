@@ -1,15 +1,12 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
-const User = require('./User');
-const Post = require('./Post');
-const Like = require('./Like');
 
 const Comment = sequelize.define('Comment', {
   userId: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: User,
+      model: 'Users', // Tham chiếu bảng Users
       key: 'id',
     },
   },
@@ -17,7 +14,7 @@ const Comment = sequelize.define('Comment', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: Post,
+      model: 'Posts', // Tham chiếu bảng Posts
       key: 'id',
     },
   },
@@ -34,7 +31,4 @@ const Comment = sequelize.define('Comment', {
   timestamps: true,
 });
 
-Comment.belongsTo(User, { foreignKey: 'userId' });
-Comment.belongsTo(Post, { foreignKey: 'postId' });
-Comment.hasMany(Like, { foreignKey: 'commentId' });
 module.exports = Comment;

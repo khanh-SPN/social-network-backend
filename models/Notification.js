@@ -1,13 +1,14 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
-const User = require('./User');
-const Post = require('./Post');
 
 const Notification = sequelize.define('Notification', {
   userId: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: { model: User, key: 'id' },
+    references: {
+      model: 'Users',
+      key: 'id',
+    },
   },
   type: {
     type: DataTypes.ENUM('like', 'comment', 'recommend'),
@@ -16,23 +17,26 @@ const Notification = sequelize.define('Notification', {
   relatedUserId: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: { model: User, key: 'id' },
+    references: {
+      model: 'Users',
+      key: 'id',
+    },
   },
   relatedPostId: {
     type: DataTypes.INTEGER,
     allowNull: true,
-    references: { model: Post, key: 'id' },
+    references: {
+      model: 'Posts',
+      key: 'id',
+    },
   },
   isRead: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: false,
   },
-}, { timestamps: true });
-
-Notification.belongsTo(User, { as: 'RelatedUser', foreignKey: 'relatedUserId' });
-Notification.belongsTo(Post, { as: 'relatedPost', foreignKey: 'relatedPostId' });
-Notification.belongsTo(User, { foreignKey: 'userId' });
-
+}, {
+  timestamps: true,
+});
 
 module.exports = Notification;

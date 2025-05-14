@@ -1,13 +1,12 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
-const User = require('./User');
 
 const Post = sequelize.define('Post', {
   userId: {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: User,
+      model: 'Users',
       key: 'id',
     },
   },
@@ -25,10 +24,7 @@ const Post = sequelize.define('Post', {
     defaultValue: 0,
   },
 }, {
-  timestamps: true, // Bật createdAt và updatedAt
+  timestamps: true,
 });
-
-Post.belongsTo(User, { foreignKey: 'userId' });
-User.hasMany(Post, { foreignKey: 'userId' });
 
 module.exports = Post;

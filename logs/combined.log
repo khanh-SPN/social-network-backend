@@ -2236,3 +2236,6 @@
 {"level":"info","message":"GET /api/posts/3/comments?page=1&limit=10","timestamp":"2025-05-14T11:18:47.602Z"}
 {"level":"info","message":"GET /api/posts/2/comments?page=1&limit=10","timestamp":"2025-05-14T11:18:47.606Z"}
 {"level":"info","message":"GET /api/users/1","timestamp":"2025-05-14T11:19:01.612Z"}
+{"level":"info","message":"POST /api/comments/13/like","timestamp":"2025-05-14T11:24:54.528Z"}
+{"level":"info","message":"GET /api/users/4","timestamp":"2025-05-14T11:30:20.220Z"}
+{"level":"info","message":"GET /api/users/4","timestamp":"2025-05-14T11:30:20.227Z"}
