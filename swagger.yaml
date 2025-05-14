@@ -1,0 +1,389 @@
+openapi: 3.0.0
+info:
+  title: Face Gram API
+  description: API for Face Gram social network
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+    description: Local server
+paths:
+  /api/auth/signup:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                profileTag:
+                  type: string
+      responses:
+        '200':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '400':
+          description: User already exists
+        '500':
+          description: Server error
+  /api/auth/login:
+    post:
+      summary: Login a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        '400':
+          description: Invalid credentials
+        '500':
+          description: Server error
+  /api/users/{id}:
+    get:
+      summary: Get user profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: User profile
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+    put:
+      summary: Update user profile
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                bio:
+                  type: string
+                profilePicture:
+                  type: string
+                  format: binary
+                coverPicture:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: User updated
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+  /api/users/{id}/follow:
+    post:
+      summary: Follow a user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Followed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  follow:
+                    type: object
+                  followed:
+                    type: boolean
+        '400':
+          description: Already followed or cannot follow self
+        '404':
+          description: User not found
+        '500':
+          description: Server error
+  /api/users/{id}/unfollow:
+    post:
+      summary: Unfollow a user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Unfollowed successfully
+        '404':
+          description: Follow not found
+        '500':
+          description: Server error
+  /api/users/search:
+    get:
+      summary: Search users by tag
+      parameters:
+        - name: tag
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of users
+        '500':
+          description: Server error
+  /api/users/suggestions:
+    get:
+      summary: Get user suggestions
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of suggested users
+        '500':
+          description: Server error
+  /api/users/{id}/following:
+    get:
+      summary: Get list of users the user is following
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of following users
+        '500':
+          description: Server error
+  /api/users/{id}/followers:
+    get:
+      summary: Get list of user's followers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of followers
+        '500':
+          description: Server error
+  /api/posts:
+    post:
+      summary: Create a post
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Post created
+        '500':
+          description: Server error
+    get:
+      summary: Get all posts with pagination
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of posts
+        '500':
+          description: Server error
+  /api/posts/{id}:
+    delete:
+      summary: Delete a post
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Post deleted
+        '404':
+          description: Post not found
+        '403':
+          description: Unauthorized
+        '500':
+          description: Server error
+  /api/posts/{id}/like:
+    post:
+      summary: Like or unlike a post
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Liked or unliked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  like:
+                    type: integer
+                  liked:
+                    type: boolean
+        '404':
+          description: Post not found
+        '500':
+          description: Server error
+  /api/posts/{id}/comment:
+    post:
+      summary: Comment on a post
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+      responses:
+        '200':
+          description: Commented successfully
+        '404':
+          description: Post not found
+        '500':
+          description: Server error
+  /api/posts/{id}/recommend:
+    post:
+      summary: Recommend a post
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Post recommended
+        '404':
+          description: Post not found
+        '500':
+          description: Server error
+  /api/notifications:
+    get:
+      summary: Get notifications with pagination
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: List of notifications
+        '500':
+          description: Server error
+  /api/notifications/{id}/read:
+    put:
+      summary: Mark a notification as read
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Notification marked as read
+        '404':
+          description: Notification not found
+        '403':
+          description: Unauthorized
+        '500':
+          description: Server error
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
