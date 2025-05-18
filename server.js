@@ -3,8 +3,9 @@ const sequelize = require('./config/db');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
 const postRoutes = require('./routes/post');
-const commentRoutes = require('./routes/comment')
+const commentRoutes = require('./routes/comment');
 const notificationRoutes = require('./routes/notification');
+const messageRoutes = require('./routes/message'); // Thêm route mới
 const swaggerUi = require('swagger-ui-express');
 const yaml = require('yamljs');
 const errorHandler = require('./middleware/error');
@@ -24,7 +25,8 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // CORS
-app.use(cors({ origin: 'http://localhost:3000' ,
+app.use(cors({
+  origin: 'http://localhost:3000',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
@@ -46,6 +48,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/comments', commentRoutes);
+app.use('/api/messages', messageRoutes); // Thêm route mới
+
 // Error handler
 app.use(errorHandler);
 

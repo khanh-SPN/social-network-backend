@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 14, 2025 lúc 01:46 PM
+-- Thời gian đã tạo: Th5 18, 2025 lúc 08:15 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -60,6 +60,28 @@ INSERT INTO `comments` (`id`, `content`, `createdAt`, `updatedAt`, `userId`, `po
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc bảng cho bảng `conversations`
+--
+
+CREATE TABLE `conversations` (
+  `id` int(11) NOT NULL,
+  `user1_id` int(11) NOT NULL,
+  `user2_id` int(11) NOT NULL,
+  `createdAt` datetime DEFAULT current_timestamp(),
+  `updatedAt` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ;
+
+--
+-- Đang đổ dữ liệu cho bảng `conversations`
+--
+
+INSERT INTO `conversations` (`id`, `user1_id`, `user2_id`, `createdAt`, `updatedAt`) VALUES
+(1, 1, 2, '2025-05-18 04:19:13', '2025-05-18 04:19:13'),
+(2, 1, 3, '2025-05-18 04:49:59', '2025-05-18 04:49:59');
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `follows`
 --
 
@@ -107,6 +129,35 @@ INSERT INTO `likes` (`id`, `createdAt`, `updatedAt`, `userId`, `postId`, `commen
 (11, '2025-05-14 11:13:30', '2025-05-14 11:13:30', 3, 4, NULL),
 (12, '2025-05-14 11:13:37', '2025-05-14 11:13:37', 3, NULL, 14),
 (13, '2025-05-14 11:24:54', '2025-05-14 11:24:54', 4, NULL, 13);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `messages`
+--
+
+CREATE TABLE `messages` (
+  `id` int(11) NOT NULL,
+  `conversation_id` int(11) NOT NULL,
+  `sender_id` int(11) NOT NULL,
+  `recipient_id` int(11) NOT NULL,
+  `content` text NOT NULL,
+  `createdAt` datetime DEFAULT current_timestamp(),
+  `isRead` tinyint(1) DEFAULT 0,
+  `updatedAt` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `messages`
+--
+
+INSERT INTO `messages` (`id`, `conversation_id`, `sender_id`, `recipient_id`, `content`, `createdAt`, `isRead`, `updatedAt`) VALUES
+(1, 2, 1, 3, 'string', '2025-05-18 04:49:59', 0, '2025-05-18 04:49:59'),
+(2, 2, 1, 3, 'hallo', '2025-05-18 06:12:29', 0, '2025-05-18 06:12:29'),
+(3, 1, 1, 2, '???', '2025-05-18 06:12:33', 0, '2025-05-18 06:12:33'),
+(4, 1, 1, 2, 'mầy lầ ai', '2025-05-18 06:12:36', 0, '2025-05-18 06:12:36'),
+(5, 2, 3, 1, 'ơi', '2025-05-18 06:12:50', 0, '2025-05-18 06:12:50'),
+(6, 2, 1, 3, '???', '2025-05-18 06:14:00', 0, '2025-05-18 06:14:00');
 
 -- --------------------------------------------------------
 
@@ -228,6 +279,15 @@ ALTER TABLE `comments`
   ADD KEY `postId` (`postId`);
 
 --
+-- Chỉ mục cho bảng `conversations`
+--
+ALTER TABLE `conversations`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `user1_id` (`user1_id`,`user2_id`),
+  ADD UNIQUE KEY `conversations_user1_id_user2_id` (`user1_id`,`user2_id`),
+  ADD KEY `user2_id` (`user2_id`);
+
+--
 -- Chỉ mục cho bảng `follows`
 --
 ALTER TABLE `follows`
@@ -242,6 +302,15 @@ ALTER TABLE `likes`
   ADD PRIMARY KEY (`id`),
   ADD KEY `userId` (`userId`),
   ADD KEY `postId` (`postId`);
+
+--
+-- Chỉ mục cho bảng `messages`
+--
+ALTER TABLE `messages`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `conversation_id` (`conversation_id`),
+  ADD KEY `sender_id` (`sender_id`),
+  ADD KEY `recipient_id` (`recipient_id`);
 
 --
 -- Chỉ mục cho bảng `notifications`
@@ -278,6 +347,12 @@ ALTER TABLE `comments`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
+-- AUTO_INCREMENT cho bảng `conversations`
+--
+ALTER TABLE `conversations`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT cho bảng `follows`
 --
 ALTER TABLE `follows`
@@ -288,6 +363,12 @@ ALTER TABLE `follows`
 --
 ALTER TABLE `likes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- AUTO_INCREMENT cho bảng `messages`
+--
+ALTER TABLE `messages`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT cho bảng `notifications`
@@ -319,6 +400,13 @@ ALTER TABLE `comments`
   ADD CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`postId`) REFERENCES `posts` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
+-- Các ràng buộc cho bảng `conversations`
+--
+ALTER TABLE `conversations`
+  ADD CONSTRAINT `conversations_ibfk_1` FOREIGN KEY (`user1_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `conversations_ibfk_2` FOREIGN KEY (`user2_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
 -- Các ràng buộc cho bảng `follows`
 --
 ALTER TABLE `follows`
@@ -331,6 +419,14 @@ ALTER TABLE `follows`
 ALTER TABLE `likes`
   ADD CONSTRAINT `likes_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   ADD CONSTRAINT `likes_ibfk_2` FOREIGN KEY (`postId`) REFERENCES `posts` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `messages`
+--
+ALTER TABLE `messages`
+  ADD CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`conversation_id`) REFERENCES `conversations` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `messages_ibfk_3` FOREIGN KEY (`recipient_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `notifications`

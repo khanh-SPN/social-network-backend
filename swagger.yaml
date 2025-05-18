@@ -1450,6 +1450,245 @@ paths:
                   msg:
                     type: string
                     example: Lỗi server
+  /api/messages:
+    get:
+      summary: Lấy danh sách tin nhắn trong cuộc trò chuyện
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: recipientId
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: ID của người nhận
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          description: Số trang
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+          description: Số tin nhắn mỗi trang
+      responses:
+        '200':
+          description: Danh sách tin nhắn
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messages:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        conversation_id:
+                          type: integer
+                        sender_id:
+                          type: integer
+                        recipient_id:
+                          type: integer
+                        content:
+                          type: string
+                        isRead:
+                          type: boolean
+                        createdAt:
+                          type: string
+                          format: date-time
+                        Sender:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            username:
+                              type: string
+                            profilePicture:
+                              type: string
+                        Recipient:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            username:
+                              type: string
+                            profilePicture:
+                              type: string
+                  totalPages:
+                    type: integer
+                  currentPage:
+                    type: integer
+        '400':
+          description: Dữ liệu đầu vào không hợp lệ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: recipientId là bắt buộc
+        '401':
+          description: Không có quyền truy cập
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Không có quyền truy cập
+        '500':
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
+    post:
+      summary: Gửi tin nhắn mới
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recipientId:
+                  type: integer
+                  description: ID của người nhận
+                content:
+                  type: string
+                  description: Nội dung tin nhắn
+              required:
+                - recipientId
+                - content
+      responses:
+        '201':
+          description: Tin nhắn được gửi thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  conversation_id:
+                    type: integer
+                  sender_id:
+                    type: integer
+                  recipient_id:
+                    type: integer
+                  content:
+                    type: string
+                  isRead:
+                    type: boolean
+                  createdAt:
+                    type: string
+                    format: date-time
+        '400':
+          description: Dữ liệu đầu vào không hợp lệ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: recipientId và content là bắt buộc
+        '401':
+          description: Không có quyền truy cập
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Không có quyền truy cập
+        '404':
+          description: Người nhận không tồn tại
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Người nhận không tồn tại
+        '500':
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
+  /api/messages/conversations:
+    get:
+      summary: Lấy danh sách cuộc trò chuyện của người dùng
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Danh sách cuộc trò chuyện
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    user:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        username:
+                          type: string
+                        profilePicture:
+                          type: string
+                    lastMessage:
+                      type: string
+                      nullable: true
+                    lastMessageTime:
+                      type: string
+                      format: date-time
+        '401':
+          description: Không có quyền truy cập
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Không có quyền truy cập
+        '500':
+          description: Lỗi server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  msg:
+                    type: string
+                    example: Lỗi server
 components:
   securitySchemes:
     bearerAuth:

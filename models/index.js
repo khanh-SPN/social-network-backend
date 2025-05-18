@@ -6,6 +6,8 @@ const Like = require('./Like');
 const Comment = require('./Comment');
 const Follow = require('./Follow');
 const Notification = require('./Notification');
+const Conversation = require('./Conversation');
+const Message = require('./Message');
 
 const db = {
   User,
@@ -14,6 +16,8 @@ const db = {
   Comment,
   Follow,
   Notification,
+  Conversation,
+  Message,
   sequelize,
   Sequelize,
 };
@@ -58,5 +62,21 @@ Notification.belongsTo(User, { as: 'RelatedUser', foreignKey: 'relatedUserId' })
 // Post - Notification
 Post.hasMany(Notification, { foreignKey: 'relatedPostId' });
 Notification.belongsTo(Post, { foreignKey: 'relatedPostId' });
+
+// User - Conversation
+User.hasMany(Conversation, { as: 'User1Conversations', foreignKey: 'user1_id' });
+User.hasMany(Conversation, { as: 'User2Conversations', foreignKey: 'user2_id' });
+Conversation.belongsTo(User, { as: 'User1', foreignKey: 'user1_id' });
+Conversation.belongsTo(User, { as: 'User2', foreignKey: 'user2_id' });
+
+// Conversation - Message
+Conversation.hasMany(Message, { foreignKey: 'conversation_id' });
+Message.belongsTo(Conversation, { foreignKey: 'conversation_id' });
+
+// User - Message
+User.hasMany(Message, { as: 'SentMessages', foreignKey: 'sender_id' });
+User.hasMany(Message, { as: 'ReceivedMessages', foreignKey: 'recipient_id' });
+Message.belongsTo(User, { as: 'Sender', foreignKey: 'sender_id' });
+Message.belongsTo(User, { as: 'Recipient', foreignKey: 'recipient_id' });
 
 module.exports = db;
