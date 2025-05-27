@@ -60,8 +60,8 @@ User.hasMany(Notification, { as: 'RelatedUser', foreignKey: 'relatedUserId' });
 Notification.belongsTo(User, { as: 'RelatedUser', foreignKey: 'relatedUserId' });
 
 // Post - Notification
-Post.hasMany(Notification, { foreignKey: 'relatedPostId' });
-Notification.belongsTo(Post, { foreignKey: 'relatedPostId' });
+Post.hasMany(Notification, { foreignKey: 'relatedPostId', as: 'Notifications' });
+Notification.belongsTo(Post, { foreignKey: 'relatedPostId', as: 'relatedPost' });
 
 // User - Conversation
 User.hasMany(Conversation, { as: 'User1Conversations', foreignKey: 'user1_id' });
