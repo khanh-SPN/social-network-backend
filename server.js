@@ -49,7 +49,8 @@ app.use('/api/posts', postRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/comments', commentRoutes);
 app.use('/api/messages', messageRoutes); // Thêm route mới
-
+const adminRoutes = require('./routes/admin'); // Thêm route admin
+app.use('/api/admin', adminRoutes); // Tích hợp route admin
 // Error handler
 app.use(errorHandler);
 
